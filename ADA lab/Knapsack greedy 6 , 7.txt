@@ -1,0 +1,75 @@
+Knapsack Greedy
+
+#include <stdio.h>
+
+#define MAX 20
+
+typedef struct {
+    float w; // weight
+    float p; // profit
+    float r; // profit/weight ratio
+} KObject;
+
+int n;
+float M;
+
+void ReadObjects(KObject obj[]) {
+    KObject temp;
+    printf("Enter the max capacity of knapsack: ");
+    scanf("%f", &M);
+    printf("Enter Weights: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%f", &obj[i].w);
+    }
+    printf("Enter Profits: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%f", &obj[i].p);
+    }
+    for (int i = 0; i < n; i++) {
+        obj[i].r = obj[i].p / obj[i].w;
+    }
+    // sort objects in descending order, based on p/w ratio
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - 1 - i; j++) {
+            if (obj[j].r < obj[j + 1].r) {
+                temp = obj[j];
+                obj[j] = obj[j + 1];
+                obj[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void Knapsack(KObject kobj[]) {
+    float x[MAX] = {0}; // solution vector
+    float totalProfit = 0;
+    float U = M; // remaining capacity
+    int i;
+    for (i = 0; i < n; i++) {
+        if (kobj[i].w > U) {
+            break;
+        } else {
+            x[i] = 1;
+            totalProfit += kobj[i].p;
+            U -= kobj[i].w;
+        }
+    }
+    if (i < n) {
+        x[i] = U / kobj[i].w;
+        totalProfit += x[i] * kobj[i].p;
+    }
+    printf("The Solution vector, x[]: ");
+    for (i = 0; i < n; i++) {
+        printf("%f ", x[i]);
+    }
+    printf("\nTotal profit is = %f\n", totalProfit);
+}
+
+int main() {
+    printf("Enter number of objects: ");
+    scanf("%d", &n);
+    KObject obj[n];
+    ReadObjects(obj);
+    Knapsack(obj);
+    return 0;
+}
